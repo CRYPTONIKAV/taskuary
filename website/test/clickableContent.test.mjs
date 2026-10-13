@@ -37,3 +37,17 @@ test("AI defaults navigation links are keyboard-operable buttons", () => {
   assert.ok(aiDefaults.includes('<Typography component="button" type="button" variant="caption" onClick={() => onGo(slot.owner_link)}'));
   assert.ok(aiDefaults.includes('<Typography component="button" type="button" variant="body2" onClick={() => onGo("connectors")}'));
 });
+
+test("pasted screenshot thumbnails offer Remove as a real button", () => {
+  // Each pasted thumbnail carries a × to remove it; it must take keyboard
+  // focus and announce itself (#139). Anchor on onDrop: other Boxes exist.
+  const source = read("ui.jsx");
+  const remove = source.match(
+    /<Box component="(\w+)"((?:(?!<Box)[\s\S])*?onDrop\(im\.id\)(?:(?!<Box)[\s\S])*?)>×<\/Box>/
+  );
+  assert.ok(remove, "Remove control exists in ui.jsx PromptThumbs");
+  assert.equal(remove[1], "button");
+  assert.match(remove[2], /type="button"/);
+  assert.match(remove[2], /aria-label="Remove this image"/);
+  assert.match(remove[2], /border: 0/);
+});
